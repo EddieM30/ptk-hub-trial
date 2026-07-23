@@ -12,9 +12,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy Firestore security rules
+        # Pinned to 15.22.1: firebase-tools >=15.22.2 has a known regression
+        # where ADC/service-account auth fails with "Failed to authenticate,
+        # have you run firebase login?" even with valid credentials.
+        # https://github.com/firebase/firebase-tools/issues/10716
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
-          npx firebase-tools deploy --only firestore:rules --project ptk-wants-to-know-trial --non-interactive
+          npx firebase-tools@15.22.1 deploy --only firestore:rules --project ptk-wants-to-know-trial --non-interactive
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTK_WANTS_TO_KNOW_TRIAL }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
