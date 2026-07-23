@@ -72,14 +72,37 @@ Phase 3. It's not a credential — just an identifier.
 - The full `firebaseConfig` object from step 4.
 - Your Firebase **Project ID** (also visible inside that same object).
 
+## 6. Wire up GitHub Actions auto-deploy (Phase 3)
+
+The workflow file (`.github/workflows/firebase-hosting-deploy.yml`) and
+`firebase.json` are already in the repo. The one thing that can't be
+scripted here is giving GitHub Actions permission to deploy to your Firebase
+project:
+
+1. In the [Firebase console](https://console.firebase.google.com/) → your
+   project → **Project settings** (gear icon) → **Service accounts** tab.
+2. Under "Firebase Admin SDK", click **Generate new private key**. Confirm
+   — this downloads a JSON file to your computer. Keep track of where it
+   saved; you'll paste its contents in the next step and then can delete it.
+3. Go to your GitHub repo → **Settings → Secrets and variables → Actions →
+   New repository secret**.
+   - **Name:** `FIREBASE_SERVICE_ACCOUNT_PTK_WANTS_TO_KNOW_TRIAL`
+   - **Value:** open the downloaded JSON file in a text editor, select all,
+     and paste the entire contents in.
+4. Save the secret, then delete the downloaded JSON file from your
+   computer — it's now stored only as an encrypted GitHub Actions secret,
+   never in the repo.
+5. Push (or re-push) to `main` and check the **Actions** tab on GitHub —
+   you should see "Deploy to Firebase Hosting on merge" run and succeed.
+   Your site will then be live at `https://ptk-wants-to-know-trial.web.app`.
+
+This service account has broad (Editor) access to the Firebase project —
+acceptable for a trial project with no other sensitive cloud resources in
+it, but worth tightening to a narrower "Firebase Hosting Admin" role via
+Google Cloud IAM if this ever handles anything more sensitive.
+
 ## Later phases that also need you
 
-- **Phase 2** — you'll create an empty public GitHub repo and send back its
-  URL so the existing local commits can be pushed.
-- **Phase 3** — you'll authorize Firebase's GitHub connection (or add a
-  service-account key as a GitHub Actions secret) so pushes to `main`
-  auto-deploy to Firebase Hosting. Exact steps will be written once we get
-  there.
 - **Phase 4** — you'll run the smoke test against this live project and
   confirm both an allowed write and a deliberately-denied write behave
   correctly, before any real page is built on top of it.
