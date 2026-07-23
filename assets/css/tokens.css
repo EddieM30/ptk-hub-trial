@@ -1,0 +1,47 @@
+/* Design tokens for PTK Wants to Know — Alpha Iota Beta trial site.
+   Swap values here (not in component CSS) when the real brand kit lands. */
+:root {
+  /* Palette */
+  --color-navy: #152242;
+  --color-navy-deep: #0d1730;
+  --color-gold: #C9A227;
+  --color-gold-light: #E6C863;
+  --color-terracotta: #B5563C;
+  --color-cream: #F5F0E4;
+  --color-cream-dim: #EDE5D2;
+  --color-ink: #1A1A1A;
+
+  /* Semantic aliases */
+  --color-bg: var(--color-cream);
+  --color-bg-alt: var(--color-cream-dim);
+  --color-surface: #FFFFFF;
+  --color-text: var(--color-ink);
+  --color-text-inverse: var(--color-cream);
+  --color-accent: var(--color-gold);
+  --color-accent-strong: var(--color-terracotta);
+  --color-brand: var(--color-navy);
+  --color-brand-deep: var(--color-navy-deep);
+  --color-focus-ring: var(--color-gold-light);
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Work Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Radii / misc */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --shadow-card: 0 6px 20px rgba(13, 23, 48, 0.12);
+  --nav-drawer-width: min(20rem, 85vw);
+}
