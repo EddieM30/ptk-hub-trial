@@ -14,22 +14,27 @@ Trial-run engagement site for Phi Theta Kappa, Alpha Iota Beta Chapter (Reynolds
 | Speak Up | No | Placeholder questions, real submission pipeline |
 | Show Up | No (sign-in only to check in) | Placeholder events, real QR + attendance tracking |
 | Your Reynolds | No | Placeholder only — "Under Construction" |
-| My Passport | Yes (`@email.vccs.edu` only) | Real, live spreadsheet-backed dashboard |
+| My Passport | Yes (`@email.vccs.edu` only) | Real, live Firestore-backed dashboard |
 
 ## Architecture
 
-- **Frontend:** static HTML/CSS/vanilla JS, hosted on GitHub Pages.
-- **Backend/data:** Google Sheets, accessed only through a Google Apps Script
-  Web App (`apps-script/Code.gs`) acting as a small REST-style API. There is
-  no other backend and no database beyond the Sheet.
-- **Auth:** Google Identity Services, used only on the My Passport page.
-  Access is restricted to `@email.vccs.edu` addresses. The client-side domain
-  hint is a UI nicety only — the Apps Script backend independently verifies
-  the signed-in user's email domain via Google's tokeninfo endpoint before
-  ever reading or writing a user row. Never trust the frontend check alone.
+- **Frontend:** static HTML/CSS/vanilla JS, hosted on **Firebase Hosting**
+  (free Spark plan), deployed automatically via a GitHub Actions workflow on
+  every push to `main`. Source lives in this GitHub repo.
+- **Backend/data:** **Cloud Firestore** (Firebase's NoSQL database), free
+  Spark tier. There is no other backend and no Cloud Functions — deliberately,
+  since Cloud Functions require a billing-enabled (Blaze) plan even for
+  free-tier usage, and this project doesn't need one.
+- **Auth:** **Firebase Authentication** with the Google sign-in provider,
+  used only on the My Passport page and for Show Up check-ins. Access to
+  writing user/attendance data is restricted to `@email.vccs.edu` addresses.
+  This is enforced by **Firestore Security Rules** reading
+  `request.auth.token.email` — a value Firebase Auth itself verifies
+  server-side during sign-in — not by any client-side check. Rules are the
+  actual security boundary; the client never has to be trusted.
 
-Full setup steps for the Google Sheet, Apps Script deployment, and OAuth
-Client ID live in [`apps-script/DEPLOYMENT.md`](apps-script/DEPLOYMENT.md).
+Full setup steps for the Firebase project, Firestore, and the GitHub Actions
+deploy wiring live in [`firebase/DEPLOYMENT.md`](firebase/DEPLOYMENT.md).
 
 ## Repo layout
 
@@ -40,15 +45,18 @@ show-up/                Show Up event hub + QR check-in
 your-reynolds/          placeholder page
 my-passport/            sign-in gated dashboard
 assets/css/             design tokens, base styles, shared components
-assets/js/               shared JS (nav, api client, auth, per-page logic)
-apps-script/             backend source + deployment docs
-test-spike/              throwaway CORS/auth round-trip test (see below)
+assets/js/               shared JS (Firebase init, auth, nav, per-page logic)
+firebase/                Firebase project setup docs
+firestore.rules          security rules — the real access-control layer
+firebase.json / .firebaserc   Firebase CLI hosting/project config
+.github/workflows/       GitHub Actions auto-deploy to Firebase Hosting
+smoke-test/              throwaway sign-in + Firestore round-trip test (see below)
 ```
 
 ## What's real vs. placeholder (this phase)
 
 - **Real:** Speak Up submission pipeline, Show Up QR generation + attendance
-  logging + duplicate-checkin guard, My Passport dashboard (live spreadsheet
+  logging + duplicate-checkin guard, My Passport dashboard (live Firestore
   data, milestone logic driven by config).
 - **Placeholder, by design:** Speak Up questions, Show Up event list, Your
   Reynolds content, My Passport milestone thresholds/prizes. All of these are
@@ -63,45 +71,47 @@ server and open it in a browser, e.g.:
 npx serve .
 ```
 
-Before anything in `show-up/` or `my-passport/` will work, you need a
-deployed Apps Script Web App and a Google OAuth Client ID — see
-[`apps-script/DEPLOYMENT.md`](apps-script/DEPLOYMENT.md). Drop the resulting
-values into `assets/js/config.js`.
+Before anything in `show-up/` or `my-passport/` will work, you need a live
+Firebase project (Auth + Firestore) — see
+[`firebase/DEPLOYMENT.md`](firebase/DEPLOYMENT.md). Drop the resulting
+`firebaseConfig` values into `assets/js/firebase-config.js`.
 
 ### Validate the backend round-trip first
 
 Before trusting any of the sign-in/attendance features, open
-`test-spike/index.html` and confirm the full round trip — sign in, write a
-test row, read it back — actually works against your deployed Apps Script
-Web App. This project's biggest technical risk is inconsistent CORS behavior
-between a GitHub Pages frontend and an Apps Script Web App backend; this
-spike is how that risk gets retired before the real pages are built on top
-of it.
+`smoke-test/index.html` and confirm: sign-in works, a write to your own
+Firestore doc succeeds, and a deliberately-wrong write (wrong domain or
+someone else's doc) is actually denied by the security rules — not just
+"happens to work." This is the go/no-go gate before the real pages get
+built on top of it.
 
 ## Migrating to a PTK-owned account later
 
-This trial is built under a personal GitHub account and a personal Google
-account (for the Sheet + Apps Script). Nothing in the code hardcodes either
-account:
+This trial is built under a personal GitHub account and a personal
+Firebase/Google account. Nothing in the code hardcodes either account:
 
-- The frontend never hardcodes a GitHub Pages URL — check-in deep links are
+- The frontend never hardcodes a Hosting URL — check-in deep links are
   built at runtime from `location.origin`/`location.pathname`.
-- The only Google-account-specific value the frontend knows about is the
-  Apps Script Web App URL and the OAuth Client ID, both in
-  `assets/js/config.js` — neither is a secret (see below), so migrating means
-  redeploying the Sheet/Apps Script under the new account and updating those
-  two config values.
+- The only Firebase-account-specific values the frontend knows about are the
+  `firebaseConfig` object (`assets/js/firebase-config.js`) and the project ID
+  (`.firebaserc`) — neither is a secret (see below), so migrating means
+  standing up a new Firebase project under the chapter's account and
+  swapping those values.
 - Transferring the GitHub repo to a chapter-owned org/account is a normal
-  GitHub repo transfer; no code changes needed.
+  GitHub repo transfer; the GitHub Actions secret used for deploys would
+  need to be re-added under the new repo, but no code changes are needed.
 
 ## On "secrets"
 
-This repo is public (a requirement of the free GitHub Pages tier). No
-credentials are committed. The Apps Script Web App URL and the Google OAuth
-Client ID are both visible to anyone using the site by design (a Client ID is
-always public; a Web App URL is not a real access control) — the actual
-security boundary is the domain-verification check the backend performs on
-every write, not secrecy of these values.
+This repo is public (Firebase Hosting's free tier doesn't require a public
+repo, but this project stays public by choice for the same transparency
+reasons a GitHub Pages site would). No credentials are committed. The
+Firebase web config values are visible to anyone using the site by design —
+Firebase's public web config is meant to be exposed; it is not an access
+control. The actual security boundary is `firestore.rules`, enforced
+server-side on every read/write, not secrecy of these values. The one real
+secret in this project — the service account credential used by GitHub
+Actions to deploy — lives only as a GitHub Actions secret, never in the repo.
 
 ## Third-party code
 
