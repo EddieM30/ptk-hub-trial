@@ -1,11 +1,69 @@
 rules_version = '2';
 
-// Placeholder — default-deny everything. Real access rules (domain-restricted
-// user/attendance access, create-only feedback) land in Phase 4, alongside
-// the smoke test that verifies they actually work before any real page
-// depends on them.
+// This is the real access-control layer for the site — not the client-side
+// `hd` sign-in hint or `isAllowedEmail()` check in assets/js/auth.js, both
+// of which are UX niceties only. Firebase Auth verifies the Google sign-in
+// server-side and attaches the verified email to request.auth.token, so
+// checking it here is real, tamper-proof enforcement.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAllowedDomain() {
+      return isSignedIn()
+        && request.auth.token.email is string
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.matches('.*@email\\.vccs\\.edu$');
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) && isAllowedDomain();
+
+      // Created once on first sign-in; profile fields aren't editable
+      // afterward in this trial, so no update rule is needed.
+      allow create: if isOwner(userId) && isAllowedDomain()
+        && request.resource.data.keys().hasAll(['email', 'display_name', 'created_at'])
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.display_name is string
+        && request.resource.data.display_name.size() <= 200;
+
+      allow update, delete: if false;
+
+      match /attendance/{eventId} {
+        allow read: if isOwner(userId) && isAllowedDomain();
+
+        // The doc ID *is* the event ID, so this path is the duplicate
+        // checkin guard: once a doc exists here, Firestore treats any
+        // further write to it as an update, which is denied below.
+        allow create: if isOwner(userId) && isAllowedDomain()
+          && eventId.size() > 0 && eventId.size() <= 100
+          && request.resource.data.keys().hasAll(['timestamp']);
+
+        allow update, delete: if false;
+      }
+    }
+
+    // Anonymous Speak Up submissions: write-only, no sign-in required, no
+    // public read (feedback isn't meant to be browsable by other students).
+    match /feedback/{feedbackId} {
+      allow create: if request.resource.data.keys().hasAll(['message', 'createdAt'])
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 5000
+        && (!('nomination' in request.resource.data)
+            || (request.resource.data.nomination is string
+                && request.resource.data.nomination.size() <= 500));
+
+      allow read, update, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

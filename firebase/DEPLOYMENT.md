@@ -101,11 +101,27 @@ acceptable for a trial project with no other sensitive cloud resources in
 it, but worth tightening to a narrower "Firebase Hosting Admin" role via
 Google Cloud IAM if this ever handles anything more sensitive.
 
-## Later phases that also need you
+## 7. Run the smoke test (Phase 4 — hard gate)
 
-- **Phase 4** — you'll run the smoke test against this live project and
-  confirm both an allowed write and a deliberately-denied write behave
-  correctly, before any real page is built on top of it.
+Once you've pushed to `main` at least once after Phase 3 (so both the real
+`firestore.rules` and the Hosting site are deployed), open the live smoke
+test at `https://ptk-wants-to-know-trial.web.app/smoke-test/` (or serve the
+repo locally with `npx serve .` and open `smoke-test/index.html` — Firebase
+allows `localhost` by default, no extra config needed).
+
+Sign in with whatever Google account you have handy and run all four tests.
+Read each result carefully:
+
+- **Test 1** (own profile doc) is expected to come back **ALLOWED** only if
+  you signed in with an `@email.vccs.edu` address — if you used a personal
+  Gmail, seeing **DENIED** here is correct, not a bug.
+- **Tests 2–4** should always come back **DENIED**/blocking-duplicates as
+  described on the page, regardless of which account you used. If any of
+  them says "SECURITY BUG" in red, stop and flag it before Phase 5 proceeds
+  — that means a rule isn't enforcing what it should.
+
+Once you have access to a real `@email.vccs.edu` account, re-run test 1
+with it to confirm the allowed path also works end to end.
 
 ## Later: migrating to a PTK-owned account
 

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Firebase smoke test — PTK Wants to Know</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <style>
+    body { font-family: var(--font-mono); }
+    main.container { max-width: 42rem; }
+    .test-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+    .test-card h3 { font-family: var(--font-mono); font-size: 0.95rem; }
+    .result { margin-top: var(--space-3); padding: var(--space-3); border-radius: var(--radius-sm); white-space: pre-wrap; font-size: 0.85rem; }
+    .result.pending { background: var(--color-bg-alt); }
+    .result.pass { background: #dcefdc; color: #1a4d1a; }
+    .result.fail { background: #f6dede; color: #6b1a1a; }
+    button { padding: var(--space-2) var(--space-4); border-radius: var(--radius-sm); border: 1px solid var(--color-brand); background: var(--color-brand); color: var(--color-text-inverse); cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #whoami { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Firebase smoke test</h1>
+    <p>
+      Not part of the site — this page exists to confirm the Firebase
+      project (Auth + Firestore + Security Rules) actually works end to
+      end before any real page depends on it. See
+      <code>README.md</code> → "Validate the backend round-trip first."
+    </p>
+
+    <div class="test-card">
+      <h3>0. Sign in</h3>
+      <p id="whoami">Not signed in.</p>
+      <button id="sign-in-btn">Sign in with Google</button>
+      <button id="sign-out-btn" disabled>Sign out</button>
+    </div>
+
+    <div class="test-card">
+      <h3>1. Create/read own profile doc</h3>
+      <p>Expected: <strong>ALLOWED</strong> if your signed-in email ends in <code>@email.vccs.edu</code>, <strong>DENIED</strong> otherwise. Either outcome proves the domain rule is working — this is the go/no-go check for the domain restriction.</p>
+      <button class="run-test" data-test="ownProfile" disabled>Run test</button>
+      <pre class="result pending" id="result-ownProfile">Not run yet.</pre>
+    </div>
+
+    <div class="test-card">
+      <h3>2. Attempt spoofed email on own doc</h3>
+      <p>Expected: always <strong>DENIED</strong> — tries to write a fake email into your own profile doc; the rule checks the field matches your verified token email.</p>
+      <button class="run-test" data-test="spoofedEmail" disabled>Run test</button>
+      <pre class="result pending" id="result-spoofedEmail">Not run yet.</pre>
+    </div>
+
+    <div class="test-card">
+      <h3>3. Attempt write to a different user's doc</h3>
+      <p>Expected: always <strong>DENIED</strong> — tries to write to a made-up other user's profile path.</p>
+      <button class="run-test" data-test="crossUser" disabled>Run test</button>
+      <pre class="result pending" id="result-crossUser">Not run yet.</pre>
+    </div>
+
+    <div class="test-card">
+      <h3>4. Duplicate check-in guard</h3>
+      <p>Expected: 1st write <strong>ALLOWED</strong>, 2nd write to the same path <strong>DENIED</strong> — this is the exact mechanism Show Up will rely on to stop double check-ins.</p>
+      <button class="run-test" data-test="duplicateCheckin" disabled>Run test</button>
+      <pre class="result pending" id="result-duplicateCheckin">Not run yet.</pre>
+    </div>
+  </main>
+
+  <script type="module" src="./smoke-test.js"></script>
+</body>
+</html>
