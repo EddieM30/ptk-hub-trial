@@ -36,6 +36,45 @@ Trial-run engagement site for Phi Theta Kappa, Alpha Iota Beta Chapter (Reynolds
 Full setup steps for the Firebase project, Firestore, and the GitHub Actions
 deploy wiring live in [`firebase/DEPLOYMENT.md`](firebase/DEPLOYMENT.md).
 
+## Shared header/nav markup
+
+This is a multi-page static site with no templating step, so the header +
+hamburger drawer markup is duplicated verbatim at the top of every page's
+`<body>` (see `index.html` for the canonical copy). When adding a new page,
+copy this block exactly — `assets/js/nav.js` expects these specific IDs:
+
+```html
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-header__brand" href="/">
+      <span class="site-header__mark" aria-hidden="true">&#x2713;</span>
+      PTK Wants to Know
+    </a>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-drawer">
+      <span class="visually-hidden">Open menu</span>
+      <span class="nav-toggle__bars" aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="site-drawer" aria-label="Main navigation" aria-hidden="true" inert>
+  <button type="button" class="nav-drawer__close" id="nav-drawer-close">Close menu</button>
+  <ul>
+    <li><a href="/">Hub Home</a></li>
+    <li><a href="/speak-up/">Speak Up</a></li>
+    <li><a href="/show-up/">Show Up</a></li>
+    <li><a href="/your-reynolds/">Your Reynolds</a></li>
+    <li><a href="/my-passport/">My Passport</a></li>
+  </ul>
+</nav>
+```
+
+Then include `assets/css/{tokens,base,components}.css` in `<head>` and
+`assets/js/nav.js` (with `defer`) before `</body>`.
+
 ## Repo layout
 
 ```

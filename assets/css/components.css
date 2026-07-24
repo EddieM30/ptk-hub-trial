@@ -1,0 +1,228 @@
+/* Shared components: header/nav drawer, buttons, cards, ticket divider,
+   form fields. Reused across every page. */
+
+/* --- Header + hamburger drawer nav --- */
+.site-header {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-bg-alt);
+  z-index: 500;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-4);
+}
+
+.site-header__brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-brand);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.site-header__mark {
+  color: var(--color-gold);
+}
+
+.nav-toggle {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--color-brand);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-toggle__bars,
+.nav-toggle__bars::before,
+.nav-toggle__bars::after {
+  content: "";
+  display: block;
+  width: 1.25rem;
+  height: 2px;
+  background: var(--color-brand);
+  position: absolute;
+}
+
+.nav-toggle__bars::before { transform: translateY(-6px); }
+.nav-toggle__bars::after { transform: translateY(6px); }
+
+.nav-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 23, 48, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 900;
+}
+
+.nav-drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-drawer {
+  position: fixed;
+  inset-block: 0;
+  left: 0;
+  width: var(--nav-drawer-width);
+  background: var(--color-brand-deep);
+  color: var(--color-text-inverse);
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  z-index: 1000;
+  padding: var(--space-7) var(--space-5) var(--space-5);
+  overflow-y: auto;
+}
+
+.nav-drawer.is-open {
+  transform: translateX(0);
+}
+
+.nav-drawer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.nav-drawer a {
+  color: var(--color-text-inverse);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+
+.nav-drawer a:hover,
+.nav-drawer a:focus-visible {
+  color: var(--color-gold-light);
+}
+
+.nav-drawer__close {
+  background: transparent;
+  border: 1px solid var(--color-text-inverse);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-6);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-block;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-brand);
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--color-brand-deep);
+  border-color: var(--color-brand-deep);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-brand);
+}
+
+.btn--outline:hover,
+.btn--outline:focus-visible {
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+}
+
+/* --- Cards --- */
+.card-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.card h3 {
+  margin: 0;
+}
+
+.card p {
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* --- Perforated ticket divider --- */
+.ticket-divider {
+  border: none;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-terracotta) 0 8px,
+    transparent 8px 16px
+  );
+  margin: var(--space-7) 0;
+}
+
+/* --- Form fields (shared by Speak Up + any future forms) --- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: var(--space-3);
+  border: 1px solid var(--color-brand);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+@media (max-width: 30em) {
+  .nav-drawer {
+    width: min(var(--nav-drawer-width), 100vw);
+  }
+}
