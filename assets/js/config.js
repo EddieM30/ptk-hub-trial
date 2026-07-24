@@ -36,3 +36,13 @@ export const EVENTS = [
     description: "Snacks, a quiet co-working space, and peer tutors on hand for last-minute finals prep.",
   },
 ];
+
+// Placeholder thresholds/prizes — exact numbers and prizes are still being
+// finalized. Ordered ascending by threshold; My Passport reads this list
+// rather than hardcoding numbers so real values can be swapped in later.
+export const MILESTONES = [
+  { threshold: 1, label: "First Stamp", badge: "🥉", prize: "Sticker pack (placeholder prize)" },
+  { threshold: 3, label: "Regular", badge: "🥈", prize: "PTK button (placeholder prize)" },
+  { threshold: 6, label: "Ranger Champion", badge: "🥇", prize: "T-shirt (placeholder prize)" },
+  { threshold: 10, label: "Hall of Fame", badge: "🏆", prize: "Prize TBD" },
+];

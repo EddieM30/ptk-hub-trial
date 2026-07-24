@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Passport — PTK Wants to Know</title>
+  <meta name="description" content="Sign in with your @email.vccs.edu account to track your PTK event attendance and badges." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="site-header__brand" href="/">
+        <span class="site-header__mark" aria-hidden="true">&#x2713;</span>
+        PTK Wants to Know
+      </a>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-drawer">
+        <span class="visually-hidden">Open menu</span>
+        <span class="nav-toggle__bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+  <nav class="nav-drawer" id="site-drawer" aria-label="Main navigation" aria-hidden="true" inert>
+    <button type="button" class="nav-drawer__close" id="nav-drawer-close">Close menu</button>
+    <ul>
+      <li><a href="/">Hub Home</a></li>
+      <li><a href="/speak-up/">Speak Up</a></li>
+      <li><a href="/show-up/">Show Up</a></li>
+      <li><a href="/your-reynolds/">Your Reynolds</a></li>
+      <li><a href="/my-passport/">My Passport</a></li>
+    </ul>
+  </nav>
+
+  <main id="main" class="container">
+    <h1>My Passport</h1>
+    <p>
+      Your real, live attendance record — sign in with your
+      <code>@email.vccs.edu</code> account to see it. Milestone thresholds
+      and prizes shown here are placeholders while the chapter finalizes
+      the real ones.
+    </p>
+
+    <hr class="ticket-divider" aria-hidden="true" />
+
+    <p id="passport-error" class="form-error" role="alert" hidden></p>
+
+    <div id="passport-signed-out">
+      <button class="btn" id="passport-sign-in-btn" type="button">Sign in with Google</button>
+    </div>
+
+    <div id="passport-wrong-domain" class="card" hidden>
+      <p id="passport-wrong-domain-message"></p>
+      <button class="btn btn--outline" id="passport-wrong-domain-sign-out-btn" type="button">Sign out and try another account</button>
+    </div>
+
+    <div id="passport-dashboard" hidden>
+      <p id="passport-welcome"></p>
+
+      <div class="card">
+        <h3>Total events attended</h3>
+        <p id="passport-total" class="passport-total-count">&hellip;</p>
+        <p id="passport-next-milestone"></p>
+      </div>
+
+      <h2>Milestones</h2>
+      <div class="card-grid" id="passport-milestones"></div>
+
+      <button class="btn btn--outline" id="passport-sign-out-btn" type="button">Sign out</button>
+    </div>
+  </main>
+
+  <script type="module" src="./my-passport.js"></script>
+  <script src="../assets/js/nav.js" defer></script>
+</body>
+</html>
