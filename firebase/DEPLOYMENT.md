@@ -35,8 +35,11 @@ perfect the first time.
 
 You don't need to create any collections by hand — the app creates
 `users/{uid}` and `users/{uid}/attendance/{event_id}` documents itself the
-first time someone signs in / checks in. Event data lives in the site's
-code, not in Firestore (see `assets/js/config.js` once Phase 7 lands).
+first time someone signs in / checks in, and `events`/`spotlights` documents
+get created through the admin dashboard (`/admin/`) once it exists. The one
+collection you do need to seed manually is `admins` — see the main
+README's "Admin dashboard" section for how to grant yourself access once
+you're signed in somewhere on the site.
 
 ## 4. Register a Web App and get your config
 

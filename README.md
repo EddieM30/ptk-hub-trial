@@ -12,9 +12,10 @@ Trial-run engagement site for a student organization chapter.
 | Section | Sign-in required? | Status |
 |---|---|---|
 | Speak Up | No | Placeholder questions, real submission pipeline |
-| Show Up | No (sign-in only to check in) | Placeholder events, real QR + attendance tracking |
+| Show Up | No (sign-in only to check in) | Real, admin-managed events; QR codes are admin-only (see below), not shown on this page |
 | Shout Out | No | Placeholder only — "Under Construction" |
 | My Passport | Yes (`@email.vccs.edu` only) | Real, live Firestore-backed dashboard |
+| Admin (`/admin/`) | Yes (admin allowlist) | Real: events, users, spotlight drafts, metrics |
 
 ## Architecture
 
@@ -35,6 +36,49 @@ Trial-run engagement site for a student organization chapter.
 
 Full setup steps for the Firebase project, Firestore, and the GitHub Actions
 deploy wiring live in [`firebase/DEPLOYMENT.md`](firebase/DEPLOYMENT.md).
+
+## Admin dashboard
+
+`/admin/` is a small internal section for officers — not linked from the
+main nav, just a small "Admin" link in every public page's footer (real
+access control is Firestore rules, not link visibility). It reuses the same
+Google sign-in as My Passport.
+
+- **`/admin/events/`** — create/edit/delete events (this is now the only
+  source of the public Show Up event list — there's no static config array
+  anymore) and generate/print a QR code per event for physical posting.
+  QR codes are **not** shown anywhere on the public site.
+- **`/admin/users/`** — search the user directory, view each user's
+  check-in history, fix a display name, remove a mistaken check-in.
+- **`/admin/spotlights/`** — draft spotlight entries. Nothing here is
+  public yet; Shout Out still shows its placeholder regardless of what's
+  drafted. Presentation-only for now.
+- **`/admin/metrics/`** — attendance/signup/feedback trends filterable by
+  date range, event, and time-series granularity, computed live in the
+  browser from Firestore (no separate analytics backend — fine at trial
+  scale, would need a real pipeline if this goes to production volume).
+
+### Granting admin access
+
+There's no self-serve admin signup. To make an account an admin:
+
+1. Have that person sign in once anywhere on the site (so their account
+   exists in Firebase Auth) — or find their UID some other way.
+2. In the [Firebase console](https://console.firebase.google.com/) →
+   Firestore Database → Data tab, create a document at
+   `admins/{their-uid}` (any field, even empty, is fine — the document's
+   *existence* is what grants access).
+3. They can now sign in at `/admin/` and will pass the gate immediately.
+
+Admin status is a Firestore allowlist, not a custom claim — this project
+has no Cloud Functions to set claims with, and this approach needs none.
+
+### Events collection starts empty
+
+Since events moved from a static array to Firestore, `/show-up/` will show
+nothing until an admin adds events through `/admin/events/`. The original
+placeholder events are documented as a comment in `assets/js/config.js`
+for quick re-entry.
 
 ## Shared header/nav markup
 
@@ -80,11 +124,13 @@ Then include `assets/css/{tokens,base,components}.css` in `<head>` and
 ```
 index.html            hub landing page
 speak-up/              Speak Up feedback form
-show-up/                Show Up event hub + QR check-in
+show-up/                Show Up event hub + check-in handler (no public QR)
 shout-out/              placeholder page
 my-passport/            sign-in gated dashboard
+admin/                  officer-only: events, users, spotlights, metrics
 assets/css/             design tokens, base styles, shared components
-assets/js/               shared JS (Firebase init, auth, nav, per-page logic)
+assets/js/               shared JS (Firebase init, auth, admin-guard, nav,
+                         mini-chart, per-page logic)
 firebase/                Firebase project setup docs
 firestore.rules          security rules — the real access-control layer
 firebase.json / .firebaserc   Firebase CLI hosting/project config
@@ -94,12 +140,14 @@ smoke-test/              throwaway sign-in + Firestore round-trip test (see belo
 
 ## What's real vs. placeholder (this phase)
 
-- **Real:** Speak Up submission pipeline, Show Up QR generation + attendance
-  logging + duplicate-checkin guard, My Passport dashboard (live Firestore
-  data, milestone logic driven by config).
-- **Placeholder, by design:** Speak Up questions, Show Up event list, Shout
-  Out content, My Passport milestone thresholds/prizes. All of these are
-  config-driven so real values can be swapped in later without touching logic.
+- **Real:** Speak Up submission pipeline, Show Up attendance logging +
+  duplicate-checkin guard, My Passport dashboard (live Firestore data,
+  milestone logic driven by config), the entire admin dashboard (events,
+  users, metrics all operate on live data).
+- **Placeholder, by design:** Speak Up questions, Shout Out content, My
+  Passport milestone thresholds/prizes — config-driven so real values can be
+  swapped in later without touching logic. Spotlight drafts are real data
+  but intentionally not surfaced publicly yet.
 
 ## Local development
 
