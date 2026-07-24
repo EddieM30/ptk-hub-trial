@@ -221,6 +221,14 @@
   min-height: 6rem;
 }
 
+.qr-wrap svg {
+  width: 100%;
+  max-width: 11rem;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 .form-error {
   background: #f6dede;
   color: #6b1a1a;
