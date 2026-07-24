@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Events — Roll Call Admin</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/components.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="site-header__brand" href="/admin/">
+        <span class="site-header__mark" aria-hidden="true">&#x2713;</span>
+        Roll Call Admin
+      </a>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-drawer">
+        <span class="visually-hidden">Open menu</span>
+        <span class="nav-toggle__bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+  <nav class="nav-drawer" id="site-drawer" aria-label="Admin navigation" aria-hidden="true" inert>
+    <button type="button" class="nav-drawer__close" id="nav-drawer-close">Close menu</button>
+    <ul>
+      <li><a href="/admin/">Admin Home</a></li>
+      <li><a href="/admin/events/">Events</a></li>
+      <li><a href="/">Back to public site</a></li>
+    </ul>
+  </nav>
+
+  <main id="main" class="container">
+    <h1>Manage Events</h1>
+    <p>
+      Events created here appear on the public Show Up page. QR codes are
+      generated here for printing/posting at the event — they are not shown
+      publicly.
+    </p>
+
+    <div id="admin-signed-out">
+      <button class="btn" id="admin-sign-in-btn" type="button">Sign in with Google</button>
+    </div>
+
+    <div id="admin-not-admin" class="card" hidden>
+      <p>You're signed in, but this account isn't on the admin list.</p>
+      <button class="btn btn--outline" id="admin-not-admin-sign-out-btn" type="button">Sign out and try another account</button>
+    </div>
+
+    <div id="admin-content" hidden>
+      <hr class="ticket-divider" aria-hidden="true" />
+
+      <h2 id="event-form-title">Add a new event</h2>
+      <p id="event-form-error" class="form-error" role="alert" hidden></p>
+      <form id="event-form" novalidate>
+        <div class="field">
+          <label for="event-id">Event ID (used in the QR code and attendance records — cannot be changed after creation)</label>
+          <input type="text" id="event-id" name="event-id" required />
+        </div>
+        <div class="field">
+          <label for="event-name">Name</label>
+          <input type="text" id="event-name" name="event-name" required />
+        </div>
+        <div class="field">
+          <label for="event-date">Date</label>
+          <input type="date" id="event-date" name="event-date" required />
+        </div>
+        <div class="field">
+          <label for="event-location">Location</label>
+          <input type="text" id="event-location" name="event-location" required />
+        </div>
+        <div class="field">
+          <label for="event-description">Description</label>
+          <textarea id="event-description" name="event-description" required></textarea>
+        </div>
+        <button type="submit" class="btn" id="event-save-btn">Create event</button>
+        <button type="button" class="btn btn--outline" id="event-cancel-edit-btn" hidden>Cancel edit</button>
+      </form>
+
+      <hr class="ticket-divider" aria-hidden="true" />
+
+      <h2>Current events</h2>
+      <div id="events-list" class="card-grid"></div>
+
+      <button class="btn btn--outline" id="admin-sign-out-btn" type="button">Sign out</button>
+    </div>
+  </main>
+
+  <script src="../../assets/js/vendor/qrcode.js"></script>
+  <script type="module" src="./events.js"></script>
+  <script src="../../assets/js/nav.js" defer></script>
+</body>
+</html>

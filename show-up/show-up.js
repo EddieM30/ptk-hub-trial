@@ -31,16 +31,6 @@ function formatDate(dateStr) {
   return d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
 }
 
-// Deep link is built at runtime from the current origin/path — never a
-// hardcoded host — so this keeps working unchanged after a domain change
-// or a repo/account transfer.
-function buildCheckinUrl(eventId) {
-  const url = new URL(location.origin + location.pathname);
-  url.searchParams.set("event", eventId);
-  url.searchParams.set("checkin", "1");
-  return url.toString();
-}
-
 async function loadEvents() {
   const snap = await getDocs(query(collection(db, "events"), orderBy("date")));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -53,26 +43,12 @@ function renderEvents(events) {
     return;
   }
   events.forEach((event) => {
-    const checkinUrl = buildCheckinUrl(event.id);
-
-    const qr = window.qrcode(0, "M");
-    qr.addData(checkinUrl);
-    qr.make();
-    const qrSvg = qr.createSvgTag({
-      cellSize: 4,
-      margin: 2,
-      alt: `QR code that checks you in to ${event.name} when scanned`,
-      title: `${event.name} check-in QR code`,
-    });
-
     const card = document.createElement("article");
     card.className = "card";
     card.innerHTML = `
       <h3>${escapeHtml(event.name)}</h3>
       <p class="tag">${escapeHtml(formatDate(event.date))} &middot; ${escapeHtml(event.location)}</p>
       <p>${escapeHtml(event.description)}</p>
-      <div class="qr-wrap">${qrSvg}</div>
-      <a class="btn" href="${checkinUrl}">Check in to this event</a>
     `;
     eventsListEl.appendChild(card);
   });

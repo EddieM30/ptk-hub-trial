@@ -33,8 +33,13 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // A user can always read their OWN admin doc (so the client can check
+    // "am I an admin" and get a clean not-found rather than a permission
+    // error) but never anyone else's. `isAdmin()` above uses exists(),
+    // which checks Firestore directly and isn't subject to this read rule,
+    // so authorization elsewhere doesn't depend on this being permissive.
     match /admins/{uid} {
-      allow read: if isAdmin();
+      allow read: if isSignedIn() && request.auth.uid == uid;
       allow write: if false;
     }
 

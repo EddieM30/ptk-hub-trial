@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shout Out — Roll Call</title>
-  <meta name="description" content="Student spotlights — coming soon." />
+  <title>Admin — Roll Call</title>
+  <meta name="robots" content="noindex" />
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,9 +18,9 @@
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a class="site-header__brand" href="/">
+      <a class="site-header__brand" href="/admin/">
         <span class="site-header__mark" aria-hidden="true">&#x2713;</span>
-        Roll Call
+        Roll Call Admin
       </a>
       <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-drawer">
         <span class="visually-hidden">Open menu</span>
@@ -30,33 +30,43 @@
   </header>
 
   <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
-  <nav class="nav-drawer" id="site-drawer" aria-label="Main navigation" aria-hidden="true" inert>
+  <nav class="nav-drawer" id="site-drawer" aria-label="Admin navigation" aria-hidden="true" inert>
     <button type="button" class="nav-drawer__close" id="nav-drawer-close">Close menu</button>
     <ul>
-      <li><a href="/">Hub Home</a></li>
-      <li><a href="/speak-up/">Speak Up</a></li>
-      <li><a href="/show-up/">Show Up</a></li>
-      <li><a href="/shout-out/">Shout Out</a></li>
-      <li><a href="/my-passport/">My Passport</a></li>
+      <li><a href="/admin/">Admin Home</a></li>
+      <li><a href="/admin/events/">Events</a></li>
+      <li><a href="/">Back to public site</a></li>
     </ul>
   </nav>
 
   <main id="main" class="container">
-    <h1>Shout Out</h1>
-    <p class="tag">Under Construction &mdash; Idea Pending</p>
-    <p>
-      This section will eventually spotlight members — but this trial
-      isn't building it out yet. Check back later.
-    </p>
-    <a class="btn btn--outline" href="/">Back to hub</a>
+    <h1>Admin</h1>
+
+    <div id="admin-signed-out">
+      <p>Sign in with your admin Google account.</p>
+      <button class="btn" id="admin-sign-in-btn" type="button">Sign in with Google</button>
+    </div>
+
+    <div id="admin-not-admin" class="card" hidden>
+      <p>You're signed in, but this account isn't on the admin list.</p>
+      <button class="btn btn--outline" id="admin-not-admin-sign-out-btn" type="button">Sign out and try another account</button>
+    </div>
+
+    <div id="admin-content" hidden>
+      <p id="admin-welcome"></p>
+      <h2>Sections</h2>
+      <div class="card-grid">
+        <article class="card">
+          <h3>Events</h3>
+          <p>Create, edit, and delete events. Generate and print QR codes for physical posting.</p>
+          <a class="btn" href="/admin/events/">Manage events</a>
+        </article>
+      </div>
+      <button class="btn btn--outline" id="admin-sign-out-btn" type="button">Sign out</button>
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <a href="/admin/">Admin</a>
-    </div>
-  </footer>
-
+  <script type="module" src="./admin.js"></script>
   <script src="../assets/js/nav.js" defer></script>
 </body>
 </html>
