@@ -23,21 +23,38 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    match /users/{userId} {
-      allow read: if isOwner(userId) && isAllowedDomain();
+    // Admin status is a Firestore allowlist, not a custom claim (no Cloud
+    // Functions in this project to set claims). A doc existing at
+    // admins/{uid} means that account is an admin — added/removed only via
+    // the Firebase console's Data tab, never through client writes (see the
+    // admins collection rule below).
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
 
-      // Created once on first sign-in; profile fields aren't editable
-      // afterward in this trial, so no update rule is needed.
+    match /admins/{uid} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if (isOwner(userId) && isAllowedDomain()) || isAdmin();
+
+      // Created once on first sign-in; profile fields aren't editable by
+      // the owner afterward in this trial, so no owner update rule exists.
+      // Admins can update (e.g. fix a display name).
       allow create: if isOwner(userId) && isAllowedDomain()
         && request.resource.data.keys().hasAll(['email', 'display_name', 'created_at'])
         && request.resource.data.email == request.auth.token.email
         && request.resource.data.display_name is string
         && request.resource.data.display_name.size() <= 200;
 
-      allow update, delete: if false;
+      allow update: if isAdmin();
+      allow delete: if false;
 
       match /attendance/{eventId} {
-        allow read: if isOwner(userId) && isAllowedDomain();
+        allow read: if (isOwner(userId) && isAllowedDomain()) || isAdmin();
 
         // The doc ID *is* the event ID, so this path is the duplicate
         // checkin guard: once a doc exists here, Firestore treats any
@@ -46,12 +63,22 @@ service cloud.firestore {
           && eventId.size() > 0 && eventId.size() <= 100
           && request.resource.data.keys().hasAll(['timestamp']);
 
-        allow update, delete: if false;
+        // Admins can remove a mistaken check-in.
+        allow update: if false;
+        allow delete: if isAdmin();
       }
     }
 
-    // Anonymous Speak Up submissions: write-only, no sign-in required, no
-    // public read (feedback isn't meant to be browsable by other students).
+    // Authorizes admin-only collectionGroup('attendance') queries used by
+    // the metrics dashboard, without touching the specific per-user rules
+    // above (both rule blocks are evaluated; either can grant access).
+    match /{path=**}/attendance/{attendanceId} {
+      allow read: if isAdmin();
+    }
+
+    // Anonymous Speak Up submissions: write-only for the public, read-only
+    // for admins (so officers can actually see feedback and metrics can
+    // count it).
     match /feedback/{feedbackId} {
       allow create: if request.resource.data.keys().hasAll(['message', 'createdAt'])
         && request.resource.data.message is string
@@ -61,7 +88,22 @@ service cloud.firestore {
             || (request.resource.data.nomination is string
                 && request.resource.data.nomination.size() <= 500));
 
-      allow read, update, delete: if false;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // Events: publicly readable (Show Up needs this with no sign-in),
+    // admin-only write. Replaces the old static EVENTS config array.
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Spotlight drafts: admin-only in both directions. The public Shout
+    // Out page does not read this collection yet — draft-only, for
+    // presentation purposes, per the current phase's scope.
+    match /spotlights/{spotlightId} {
+      allow read, write: if isAdmin();
     }
 
     match /{document=**} {

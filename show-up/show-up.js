@@ -2,6 +2,10 @@ import {
   doc,
   getDoc,
   setDoc,
+  collection,
+  getDocs,
+  query,
+  orderBy,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 import { db } from "../assets/js/firebase-init.js";
@@ -11,7 +15,6 @@ import {
   isAllowedEmail,
   ALLOWED_EMAIL_DOMAIN,
 } from "../assets/js/auth.js";
-import { EVENTS } from "../assets/js/config.js";
 
 const eventsListEl = document.getElementById("events-list");
 const statusEl = document.getElementById("checkin-status");
@@ -38,9 +41,18 @@ function buildCheckinUrl(eventId) {
   return url.toString();
 }
 
-function renderEvents() {
+async function loadEvents() {
+  const snap = await getDocs(query(collection(db, "events"), orderBy("date")));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+function renderEvents(events) {
   eventsListEl.innerHTML = "";
-  EVENTS.forEach((event) => {
+  if (events.length === 0) {
+    eventsListEl.innerHTML = `<p>No events posted yet — check back soon.</p>`;
+    return;
+  }
+  events.forEach((event) => {
     const checkinUrl = buildCheckinUrl(event.id);
 
     const qr = window.qrcode(0, "M");
@@ -65,8 +77,6 @@ function renderEvents() {
     eventsListEl.appendChild(card);
   });
 }
-
-renderEvents();
 
 function setStatus(html) {
   statusEl.hidden = false;
@@ -116,13 +126,26 @@ function runCheckinFlow(event) {
   });
 }
 
-const params = new URLSearchParams(location.search);
-if (params.get("checkin") === "1") {
-  const eventId = params.get("event");
-  const event = EVENTS.find((e) => e.id === eventId);
-  if (!event) {
-    setStatus(`<p class="form-error">That event QR code doesn't match a known event. If you scanned this recently, let an officer know.</p>`);
-  } else {
-    runCheckinFlow(event);
+async function init() {
+  let events = [];
+  try {
+    events = await loadEvents();
+  } catch (err) {
+    eventsListEl.innerHTML = `<p class="form-error">Couldn't load events: ${escapeHtml(err.message)}</p>`;
+    return;
+  }
+  renderEvents(events);
+
+  const params = new URLSearchParams(location.search);
+  if (params.get("checkin") === "1") {
+    const eventId = params.get("event");
+    const event = events.find((e) => e.id === eventId);
+    if (!event) {
+      setStatus(`<p class="form-error">That event QR code doesn't match a known event. If you scanned this recently, let an officer know.</p>`);
+    } else {
+      runCheckinFlow(event);
+    }
   }
 }
+
+init();
