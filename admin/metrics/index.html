@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Manage Events — Roll Call Admin</title>
+  <title>Metrics — Roll Call Admin</title>
   <meta name="robots" content="noindex" />
   <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -43,11 +43,11 @@
   </nav>
 
   <main id="main" class="container">
-    <h1>Manage Events</h1>
+    <h1>Metrics</h1>
     <p>
-      Events created here appear on the public Show Up page. QR codes are
-      generated here for printing/posting at the event — they are not shown
-      publicly.
+      Everything below is computed live from Firestore in your browser (no
+      separate analytics backend). At real chapter scale this would move to
+      a precomputed/server-side pipeline — fine for a trial's data volume.
     </p>
 
     <div id="admin-signed-out">
@@ -62,44 +62,85 @@
     <div id="admin-content" hidden>
       <hr class="ticket-divider" aria-hidden="true" />
 
-      <h2 id="event-form-title">Add a new event</h2>
-      <p id="event-form-error" class="form-error" role="alert" hidden></p>
-      <form id="event-form" novalidate>
+      <p id="metrics-error" class="form-error" role="alert" hidden></p>
+
+      <form class="filter-bar" id="filter-form">
         <div class="field">
-          <label for="event-id">Event ID (used in the QR code and attendance records — cannot be changed after creation)</label>
-          <input type="text" id="event-id" name="event-id" required />
+          <label for="filter-range">Date range</label>
+          <select id="filter-range" name="filter-range">
+            <option value="all">All time</option>
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
         </div>
         <div class="field">
-          <label for="event-name">Name</label>
-          <input type="text" id="event-name" name="event-name" required />
+          <label for="filter-granularity">Time-series granularity</label>
+          <select id="filter-granularity" name="filter-granularity">
+            <option value="day" selected>Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+          </select>
         </div>
-        <div class="field">
-          <label for="event-date">Date</label>
-          <input type="date" id="event-date" name="event-date" required />
+        <div class="field" id="filter-events-field">
+          <span>Events</span>
+          <div id="filter-events-list"></div>
         </div>
-        <div class="field">
-          <label for="event-location">Location</label>
-          <input type="text" id="event-location" name="event-location" required />
-        </div>
-        <div class="field">
-          <label for="event-description">Description</label>
-          <textarea id="event-description" name="event-description" required></textarea>
-        </div>
-        <button type="submit" class="btn" id="event-save-btn">Create event</button>
-        <button type="button" class="btn btn--outline" id="event-cancel-edit-btn" hidden>Cancel edit</button>
       </form>
 
-      <hr class="ticket-divider" aria-hidden="true" />
+      <div class="stat-tile-grid" id="stat-tiles"></div>
 
-      <h2>Current events</h2>
-      <div id="events-list" class="card-grid"></div>
+      <div class="chart-container">
+        <h3>Check-ins over time</h3>
+        <div id="chart-attendance-time"></div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Attendance by event</h3>
+        <div id="chart-attendance-by-event"></div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Engagement segmentation</h3>
+        <p class="tag">Users bucketed by total check-ins, using the milestone thresholds from config.</p>
+        <div id="chart-engagement-legend"></div>
+        <div id="chart-engagement"></div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Signups over time</h3>
+        <div id="chart-signups-time"></div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Feedback volume over time</h3>
+        <div id="chart-feedback-time"></div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Feedback: attendance interest</h3>
+        <div id="chart-feedback-interest-legend"></div>
+        <div id="chart-feedback-interest"></div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Most engaged users</h3>
+        <p class="tag">Top 15 by check-ins within the current filter.</p>
+        <div style="overflow-x:auto">
+          <table class="admin-table" id="leaderboard-table">
+            <thead>
+              <tr><th>#</th><th>Name</th><th>Email</th><th>Check-ins</th></tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+      </div>
 
       <button class="btn btn--outline" id="admin-sign-out-btn" type="button">Sign out</button>
     </div>
   </main>
 
-  <script src="../../assets/js/vendor/qrcode.js"></script>
-  <script type="module" src="./events.js"></script>
+  <script type="module" src="./metrics.js"></script>
   <script src="../../assets/js/nav.js" defer></script>
 </body>
 </html>
