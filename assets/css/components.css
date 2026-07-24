@@ -221,6 +221,14 @@
   min-height: 6rem;
 }
 
+.form-error {
+  background: #f6dede;
+  color: #6b1a1a;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
 @media (max-width: 30em) {
   .nav-drawer {
     width: min(var(--nav-drawer-width), 100vw);

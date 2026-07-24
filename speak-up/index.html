@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Speak Up — PTK Wants to Know</title>
+  <meta name="description" content="Share quick, anonymous feedback with Alpha Iota Beta. No sign-in required." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="site-header__brand" href="/">
+        <span class="site-header__mark" aria-hidden="true">&#x2713;</span>
+        PTK Wants to Know
+      </a>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-drawer">
+        <span class="visually-hidden">Open menu</span>
+        <span class="nav-toggle__bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+  <nav class="nav-drawer" id="site-drawer" aria-label="Main navigation" aria-hidden="true" inert>
+    <button type="button" class="nav-drawer__close" id="nav-drawer-close">Close menu</button>
+    <ul>
+      <li><a href="/">Hub Home</a></li>
+      <li><a href="/speak-up/">Speak Up</a></li>
+      <li><a href="/show-up/">Show Up</a></li>
+      <li><a href="/your-reynolds/">Your Reynolds</a></li>
+      <li><a href="/my-passport/">My Passport</a></li>
+    </ul>
+  </nav>
+
+  <main id="main" class="container">
+    <h1>Speak Up</h1>
+    <p>
+      Quick, anonymous feedback for Alpha Iota Beta — no sign-in, no
+      account. This trial's questions are placeholders; the real question
+      set is still being finalized.
+    </p>
+
+    <hr class="ticket-divider" aria-hidden="true" />
+
+    <form id="feedback-form" novalidate>
+      <div class="field">
+        <label for="message">What's one thing PTK could do better this semester? (Or something we're doing right!)</label>
+        <textarea id="message" name="message" required maxlength="5000"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="attendance-interest">How likely are you to come to a PTK event this semester?</label>
+        <select id="attendance-interest" name="attendance-interest">
+          <option value="">Prefer not to say</option>
+          <option value="very-likely">Very likely</option>
+          <option value="somewhat-likely">Somewhat likely</option>
+          <option value="not-sure">Not sure yet</option>
+          <option value="probably-not">Probably not</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="nomination">Know a Reynolds Ranger (including yourself!) who deserves a Your Reynolds spotlight? Tell us who and why. (Optional)</label>
+        <textarea id="nomination" name="nomination" maxlength="500"></textarea>
+      </div>
+
+      <p id="form-error" class="form-error" role="alert" hidden></p>
+
+      <button type="submit" class="btn" id="submit-btn">Send feedback</button>
+    </form>
+
+    <div id="success-state" hidden>
+      <h2>Thanks for speaking up.</h2>
+      <p>Your feedback was submitted anonymously. There's nothing else to do — you can close this page or head back to the hub.</p>
+      <a class="btn btn--outline" href="/">Back to hub</a>
+    </div>
+  </main>
+
+  <script type="module" src="./speak-up.js"></script>
+  <script src="../assets/js/nav.js" defer></script>
+</body>
+</html>
