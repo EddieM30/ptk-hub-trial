@@ -12,7 +12,7 @@ export const EVENTS = [
     name: "Fall Kickoff Mixer",
     date: "2026-08-25",
     location: "Student Commons, Bldg 200",
-    description: "Meet fellow PTK members, grab free food, and find out what committees are forming this semester.",
+    description: "Meet fellow chapter members, grab free food, and find out what committees are forming this semester.",
   },
   {
     id: "induction-ceremony",
@@ -42,7 +42,7 @@ export const EVENTS = [
 // rather than hardcoding numbers so real values can be swapped in later.
 export const MILESTONES = [
   { threshold: 1, label: "First Stamp", badge: "🥉", prize: "Sticker pack (placeholder prize)" },
-  { threshold: 3, label: "Regular", badge: "🥈", prize: "PTK button (placeholder prize)" },
-  { threshold: 6, label: "Ranger Champion", badge: "🥇", prize: "T-shirt (placeholder prize)" },
+  { threshold: 3, label: "Regular", badge: "🥈", prize: "Chapter button (placeholder prize)" },
+  { threshold: 6, label: "Champion", badge: "🥇", prize: "T-shirt (placeholder prize)" },
   { threshold: 10, label: "Hall of Fame", badge: "🏆", prize: "Prize TBD" },
 ];

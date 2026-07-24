@@ -1,11 +1,11 @@
-# PTK Wants to Know
+# Roll Call
 
-Trial-run engagement site for Phi Theta Kappa, Alpha Iota Beta Chapter (Reynolds Community College).
+Trial-run engagement site for a student organization chapter.
 
 > **Status: trial build, not a final production launch.** Several sections use
 > placeholder content on purpose (see "What's real vs. placeholder" below).
-> This trial exists to test whether a centralized, PTK-owned engagement system
-> is worth building out officially.
+> This trial exists to test whether a centralized, chapter-owned engagement
+> system is worth building out officially.
 
 ## Sections
 
@@ -13,7 +13,7 @@ Trial-run engagement site for Phi Theta Kappa, Alpha Iota Beta Chapter (Reynolds
 |---|---|---|
 | Speak Up | No | Placeholder questions, real submission pipeline |
 | Show Up | No (sign-in only to check in) | Placeholder events, real QR + attendance tracking |
-| Your Reynolds | No | Placeholder only — "Under Construction" |
+| Shout Out | No | Placeholder only — "Under Construction" |
 | My Passport | Yes (`@email.vccs.edu` only) | Real, live Firestore-backed dashboard |
 
 ## Architecture
@@ -50,7 +50,7 @@ copy this block exactly — `assets/js/nav.js` expects these specific IDs:
   <div class="container site-header__inner">
     <a class="site-header__brand" href="/">
       <span class="site-header__mark" aria-hidden="true">&#x2713;</span>
-      PTK Wants to Know
+      Roll Call
     </a>
     <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-drawer">
       <span class="visually-hidden">Open menu</span>
@@ -66,7 +66,7 @@ copy this block exactly — `assets/js/nav.js` expects these specific IDs:
     <li><a href="/">Hub Home</a></li>
     <li><a href="/speak-up/">Speak Up</a></li>
     <li><a href="/show-up/">Show Up</a></li>
-    <li><a href="/your-reynolds/">Your Reynolds</a></li>
+    <li><a href="/shout-out/">Shout Out</a></li>
     <li><a href="/my-passport/">My Passport</a></li>
   </ul>
 </nav>
@@ -81,7 +81,7 @@ Then include `assets/css/{tokens,base,components}.css` in `<head>` and
 index.html            hub landing page
 speak-up/              Speak Up feedback form
 show-up/                Show Up event hub + QR check-in
-your-reynolds/          placeholder page
+shout-out/              placeholder page
 my-passport/            sign-in gated dashboard
 assets/css/             design tokens, base styles, shared components
 assets/js/               shared JS (Firebase init, auth, nav, per-page logic)
@@ -97,8 +97,8 @@ smoke-test/              throwaway sign-in + Firestore round-trip test (see belo
 - **Real:** Speak Up submission pipeline, Show Up QR generation + attendance
   logging + duplicate-checkin guard, My Passport dashboard (live Firestore
   data, milestone logic driven by config).
-- **Placeholder, by design:** Speak Up questions, Show Up event list, Your
-  Reynolds content, My Passport milestone thresholds/prizes. All of these are
+- **Placeholder, by design:** Speak Up questions, Show Up event list, Shout
+  Out content, My Passport milestone thresholds/prizes. All of these are
   config-driven so real values can be swapped in later without touching logic.
 
 ## Local development
@@ -124,7 +124,7 @@ someone else's doc) is actually denied by the security rules — not just
 "happens to work." This is the go/no-go gate before the real pages get
 built on top of it.
 
-## Migrating to a PTK-owned account later
+## Migrating to a chapter-owned account later
 
 This trial is built under a personal GitHub account and a personal
 Firebase/Google account. Nothing in the code hardcodes either account:

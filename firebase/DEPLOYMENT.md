@@ -123,7 +123,7 @@ Read each result carefully:
 Once you have access to a real `@email.vccs.edu` account, re-run test 1
 with it to confirm the allowed path also works end to end.
 
-## Later: migrating to a PTK-owned account
+## Later: migrating to a chapter-owned account
 
 When this trial graduates to a real chapter-owned build, repeat steps 1–4
 under the chapter's Google/Firebase account, then swap the `firebaseConfig`
