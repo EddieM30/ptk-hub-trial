@@ -46,7 +46,12 @@ function renderEvents() {
     const qr = window.qrcode(0, "M");
     qr.addData(checkinUrl);
     qr.make();
-    const qrSvg = qr.createSvgTag({ cellSize: 4, margin: 2 });
+    const qrSvg = qr.createSvgTag({
+      cellSize: 4,
+      margin: 2,
+      alt: `QR code that checks you in to ${event.name} when scanned`,
+      title: `${event.name} check-in QR code`,
+    });
 
     const card = document.createElement("article");
     card.className = "card";

@@ -34,7 +34,7 @@ h3 { font-size: 1.25rem; }
 p { margin: 0 0 var(--space-4); }
 
 a {
-  color: var(--color-accent-strong);
+  color: var(--color-link);
 }
 
 img {
