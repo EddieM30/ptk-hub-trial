@@ -185,6 +185,7 @@ initAdminGuard(
     signInBtn: document.getElementById("admin-sign-in-btn"),
     signOutBtn: document.getElementById("admin-sign-out-btn"),
     notAdminSignOutBtn: document.getElementById("admin-not-admin-sign-out-btn"),
+    notAdminInfoEl: document.getElementById("admin-not-admin-info"),
   },
   () => {
     refresh();
