@@ -6,6 +6,15 @@
   box-sizing: border-box;
 }
 
+/* The [hidden] attribute loses to any author rule that sets `display`
+   (e.g. .card's flex, .card-grid's grid) at equal specificity, since
+   author styles beat the browser's built-in [hidden] behavior — an
+   element with both `class="card"` and `hidden` stays visible otherwise.
+   This makes `hidden` win unconditionally, everywhere. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
